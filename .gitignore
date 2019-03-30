@@ -1,6 +1,6 @@
 files.txt
 
 \.vscode/
-\.build/
-\.dist/
-\.dload.egg-info/
+\build/
+\dist/
+\dload.egg-info/
