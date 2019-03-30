@@ -1,0 +1,6 @@
+files.txt
+
+\.vscode/
+\.build/
+\.dist/
+\.dload.egg-info/
