@@ -1,2 +1,5 @@
-ftp://127.0.0.1:1026/d/01%20Winter%20Is%20Coming.mkv
-http://172.102.0.7/data/latest-upload/todays-movies/index.php?dir=English-Movies/Bluray/Bohemian%20Rhapsody%20%282018%29/&file=Bohemian%20Rhapsody%20%282018%29.mp4
+ftps://127.0.0.1:1027/CWP_Scripts_working_-_Copy_V4.xlsx
+https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+ftp://127.0.0.1:1026/Postman-linux-x64-7.0.5.tar.gz
+ftp://127.0.0.1:1026/gitkraken-amd64.deb
+http://localhost:8000/code_1.32.1-1552006243_amd64.deb

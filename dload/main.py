@@ -10,17 +10,22 @@ def main():
     """
     Entry point of the application.
     """
-    args = init_cli()
-    print("Starting the application..")
-    print(f"download path: {args.location}")
-    download_location = args.location
-    if args.file is not None:
-        for line in args.file:
-            Client.download(line, download_location)
+    try:
+        args = init_cli()
+        print("Starting the application..")
+        print(f"Download path: {args.location} \n")
+        download_location = args.location
+        client = Client(download_location)
+        if args.file is not None:
+            for line in args.file:
+                client.download(line.rstrip())
 
-    if args.urls is not None:   
-        for url in args.urls:
-            Client.download(url, download_location)
+        if args.urls is not None:   
+            for url in args.urls:
+                client.download(url.rstrip())
+    except KeyboardInterrupt:
+        # remove all temp files
+        sys.exit(0)
 
 
 def init_cli():
@@ -66,7 +71,8 @@ def init_cli():
     yes, msg = create_check_writable_dir(d_location)
     if not yes:
         print(msg)
-        print("\nPlease create and/or update permission for the directory or provide a download location with -f/--file")
+        print("\nPlease create and/or update permission for the directory \
+            or provide a download location with -f/--file")
         sys.exit(1)
 
     # add argument

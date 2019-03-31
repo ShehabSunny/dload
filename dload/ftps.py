@@ -1,3 +1,4 @@
+from tqdm import tqdm
 from .source import Source
 import os
 from urllib.request import urlopen, Request
@@ -5,7 +6,7 @@ import time
 import itertools
 
 
-class FtpSource(Source):
+class FtpsSource(Source):
     def download(self):
         print(f"Location: {self.file_location}")
 

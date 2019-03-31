@@ -1,23 +1,31 @@
 from .http import HttpSource
 from .ftp import FtpSource
+from .ftps import FtpsSource
 from .common import parse_protocol
 import sys
 
 
 class Client():
-    @staticmethod
-    def download(url: str, download_dir: str):
+    def __init__(self, download_dir):
+        self._download_dir = download_dir
+
+    def download(self, url: str):
+        """
+        handle all protocols here
+        """
         protocol = parse_protocol(url)
-        print(protocol)
+        print(f"URL: {url}")
+        print(f"Protocol: {protocol}")
         if protocol == 'http':
-            source = HttpSource(url, download_dir)
+            source = HttpSource(url, self._download_dir)
         elif protocol == 'https':
-            source = HttpSource(url, download_dir)
+            source = HttpSource(url, self._download_dir)
         elif protocol == 'ftp':
-            print("here")
-            source = FtpSource(url, download_dir)
+            source = FtpSource(url, self._download_dir)
+        elif protocol == 'ftps':
+            source = FtpsSource(url, self._download_dir)
         else:
             print(f"protocol {protocol} is not supported yet", file=sys.stderr)
-            return
+            return -1
         # download the file
         source.download()

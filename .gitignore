@@ -4,3 +4,4 @@ files.txt
 \build/
 \dist/
 \dload.egg-info/
+\__pycache__/
