@@ -11,7 +11,7 @@ from pyftpdlib.handlers import TLS_FTPHandler
 def main():
     authorizer = DummyAuthorizer()
     authorizer.add_user('user', '12345', '.', perm='elradfmwMT')
-    authorizer.add_anonymous("/home/sunny/Downloads", perm="elradfmw")
+    authorizer.add_anonymous("C:\\Users\\sunny\\Downloads", perm="elradfmw")
     handler = TLS_FTPHandler
     handler.certfile = 'keycert.pem'
     handler.authorizer = authorizer

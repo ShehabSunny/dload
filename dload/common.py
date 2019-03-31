@@ -23,3 +23,11 @@ class WritableDir(argparse.Action):
 def parse_protocol(url="") -> str:
     o = urlparse(url)
     return o.scheme
+
+def parse_host(url="") -> str:
+    o = urlparse(url)
+    return o.hostname
+
+def parse_port(url="") -> str:
+    o = urlparse(url)
+    return o.port

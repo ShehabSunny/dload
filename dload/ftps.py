@@ -1,26 +1,52 @@
-from tqdm import tqdm
 from .source import Source
-import os
-from urllib.request import urlopen, Request
-import time
-import itertools
+import ftplib
+from urllib.parse import urlparse
 
 
 class FtpsSource(Source):
     def download(self):
         print(f"Location: {self.file_location}")
 
-        req = Request(self.url)
-        response = urlopen(req)
+        # parse url 
+        u = urlparse(self.url)
+        host = u.hostname
+        port = u.port
+        username = u.username
+        password = u.password
+        path = "/".join(u.path.split("/")[:-1])
+        # define chunk size
         chunk_len = 16 * 1024
-        print('Downloading', end='')
-        with open(self.file_location, 'wb') as f:
-            for c in itertools.count():
-                if c % 40 == 0:
-                    print(".", end ="")
-                chunk = response.read(chunk_len)
-                if not chunk:
-                    break
-                f.write(chunk)
-        print('\n')
+        
+        # FTP_TLS init
+        ftps = ftplib.FTP_TLS()
 
+        # connect to server
+        try:
+            ftps.connect(host, port)
+        except Exception as e:
+            print(f"could not connect to server: {str(e)}")
+            return
+        
+        # login
+        try:
+            ftps.login(username, password)
+            ftps.prot_p()
+            ftps.nlst()
+        except Exception as e:
+            print(f"could not login to server: {str(e)}")
+            ftps.close()
+            return
+
+        # chane directory
+        try:
+            ftps.cwd(path)
+        except Exception as e:
+            print(f"ftps file path is not valid: {str(e)}")
+            ftps.close()
+            return
+
+        # define file handler
+        handler = open(self.file_location, 'wb')
+        # download
+        ftps.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=handler.write)
+        ftps.close()
