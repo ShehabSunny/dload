@@ -9,45 +9,39 @@ class SftpSource(Source):
         u = urlparse(self.url)
         host = u.hostname
         port = u.port
+        if port is None:
+            port = 22 # default port for sftp
         username = u.username
         password = u.password
-        path = "/".join(u.path.split("/")[:-1])
+        path = u.path
         # define chunk size
         chunk_len = 16 * 1024
         
-        # init client
-        transport = paramiko.Transport((host, port))
-        sftp = paramiko.SFTPClient.from_transport(transport)
 
-        # connect to server
+        # open transport
         try:
-            ftps.connect(host, port)
+            transport = paramiko.Transport((host, port))
         except Exception as e:
-            return -1, str(e)
+            return -1, f"could open transport: {str(e)}"
         
-        # login
+        # authenticate and get client
         try:
-            ftps.login(username, password)
-            ftps.prot_p()
-            ftps.nlst()
+            transport.connect(username=username, password=password)
+            sftp = paramiko.SFTPClient.from_transport(transport)
         except Exception as e:
-            ftps.close()
-            return -1, str(e)
+            return -1, f"could not authenticate: {str(e)}"
 
-        # chane directory
-        try:
-            ftps.cwd(path)
-        except Exception as e:
-            ftps.close()
-            return -1, str(e)
+        # callback
+        def cb(downloaded, total):
+            print(".", end='')
 
-        # define file handler
-        handler = open(self.file_location, 'wb')
         # download
         try:
-            ftps.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=handler.write)
-            ftps.close()
+            sftp.get(path, self.file_location, callback=cb)
+            sftp.close()
+            transport.close()
             return 0, ""
-        except ftplib.error_perm as ex:
-            ftps.close()
+        except Exception as ex:
+            sftp.close()
+            transport.close()
             return -1, str(ex)
