@@ -1,13 +1,10 @@
 from .source import Source
 import ftplib
 from urllib.parse import urlparse
-import sys
 
 
 class FtpSource(Source):
     def download(self):
-        print(f"Location: {self.file_location}")
-
         # parse url 
         u = urlparse(self.url)
         host = u.hostname
@@ -25,32 +22,29 @@ class FtpSource(Source):
         try:
             ftp.connect(host, port)
         except Exception as e:
-            print(f"could not connect to server: {str(e)}")
-            return
+            return -1, str(e)
         
         # login
         try:
             ftp.login(username, password)
         except Exception as e:
-            print(f"could not login to server: {str(e)}")
             ftp.close()
-            return
+            return -1, str(e)
 
-        # chane directory
+        # change directory
         try:
             ftp.cwd(path)
         except Exception as e:
-            print(f"ftp file path is not valid: {str(e)}")
             ftp.close()
-            return
+            return -1, str(e)
 
         # define file handler
         handler = open(self.file_location, 'wb')
         # download
         try:
             ftp.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=handler.write)
-        except ftplib.error_perm as ex:
-            print(f"could not download the file: {str(ex)}\n", file=sys.stderr)
-        finally: 
             ftp.close()
-            return
+            return 0, ""
+        except ftplib.error_perm as ex:
+            ftp.close()
+            return -1, str(ex)

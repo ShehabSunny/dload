@@ -7,8 +7,6 @@ import math
 
 class HttpSource(Source):
     def download(self):
-        print(f"Location: {self.file_location}")
-
         # add headers to act like a broweser
         headers = {'User-Agent': 
             """
@@ -18,10 +16,14 @@ class HttpSource(Source):
             """
         }
 
-        req = Request(self.url, headers=headers)
-        response = urlopen(req)
-        chunk_len = 16 * 1024
-        with open(self.file_location, 'wb') as f:
-            for _ in tqdm(range(math.ceil(response.length / chunk_len))):
-                chunk = response.read(chunk_len)
-                f.write(chunk)
+        try:
+            req = Request(self.url, headers=headers)
+            response = urlopen(req)
+            chunk_len = 16 * 1024
+            with open(self.file_location, 'wb') as f:
+                for _ in tqdm(range(math.ceil(response.length / chunk_len))):
+                    chunk = response.read(chunk_len)
+                    f.write(chunk)
+            return 0, ""
+        except Exception as ex:
+            return -1, str(ex)
