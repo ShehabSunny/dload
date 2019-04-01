@@ -1,2 +1,2 @@
-sftp://demo:password@test.rebex.net/pub/example/WinFormClient.png
-ftp://user:12345@107.155.79.133:1026/file.txt
+ssh://demo@test.rebex.net:22/pub/example/WinFormClient.png
+ftps://demo:password@test.rebex.net:21/pub/example/FtpDownloader.png

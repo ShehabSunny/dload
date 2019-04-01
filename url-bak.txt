@@ -17,3 +17,7 @@ ftps://demo:password@test.rebex.net/readme.txt
 ftps://user:12345@107.155.79.133:1027/file.txtd
 ftps://user:12345@107.155.79.133:1027/file.txt
 ftp://107.155.79.133:1026/file.txt
+
+
+sftp://demo:password@test.rebex.net/pub/example/WinFormClient.png
+ftp://user:12345@107.155.79.133:1026/file.txt
