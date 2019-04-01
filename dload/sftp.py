@@ -1,26 +1,23 @@
 from .source import Source
-import ftplib
+import paramiko
 from urllib.parse import urlparse
-import socket
 
 
-class FtpsSource(Source):
+class SftpSource(Source):
     def download(self):
         # parse url 
         u = urlparse(self.url)
         host = u.hostname
         port = u.port
-        if port is None:
-            port = 21 #default port for FTPS
         username = u.username
         password = u.password
         path = "/".join(u.path.split("/")[:-1])
         # define chunk size
         chunk_len = 16 * 1024
         
-        # FTP_TLS init
-        ftps = ftplib.FTP_TLS()
-        ftps.af = socket.AF_INET6
+        # init client
+        transport = paramiko.Transport((host, port))
+        sftp = paramiko.SFTPClient.from_transport(transport)
 
         # connect to server
         try:
@@ -32,6 +29,7 @@ class FtpsSource(Source):
         try:
             ftps.login(username, password)
             ftps.prot_p()
+            ftps.nlst()
         except Exception as e:
             ftps.close()
             return -1, str(e)

@@ -9,6 +9,8 @@ class FtpSource(Source):
         u = urlparse(self.url)
         host = u.hostname
         port = u.port
+        if port is None:
+            port = 21 #default port for FTP
         username = u.username
         password = u.password
         path = "/".join(u.path.split("/")[:-1])

@@ -35,5 +35,5 @@ class Client():
             else:
                 print(f"Download failed: {err_msg}\n", file=sys.stderr)
         except Exception as ex:
-            print(f"Download failed: {str(ex)}")
+            print(f"Download failed: {str(ex)}\n")
 
