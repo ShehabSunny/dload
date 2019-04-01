@@ -1,6 +1,7 @@
 from .source import Source
 import ftplib
 from urllib.parse import urlparse
+import sys
 
 
 class FtpsSource(Source):
@@ -48,5 +49,10 @@ class FtpsSource(Source):
         # define file handler
         handler = open(self.file_location, 'wb')
         # download
-        ftps.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=handler.write)
-        ftps.close()
+        try:
+            ftps.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=handler.write)
+        except ftplib.error_perm as ex:
+            print(f"could not download the file: {str(ex)}\n", file=sys.stderr)
+        finally: 
+            ftps.close()
+            return
