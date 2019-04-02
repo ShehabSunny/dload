@@ -8,8 +8,9 @@ import sys
 
 
 class Client():
-    def __init__(self, download_dir):
+    def __init__(self, download_dir, timeout=60):
         self._download_dir = download_dir
+        self.timeout = timeout
 
     def download(self, url: str):
         """
@@ -19,21 +20,19 @@ class Client():
         print(f"URL: {url}")
         print(f"Protocol: {protocol}")
         if protocol == 'http':
-            source = HttpSource(url, self._download_dir)
+            source = HttpSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'https':
-            source = HttpSource(url, self._download_dir)
+            source = HttpSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'ftp':
-            source = FtpSource(url, self._download_dir)
+            source = FtpSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'ftps':
-            source = FtpsSource(url, self._download_dir)
+            source = FtpsSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'sftp':
-            # use SSH for SFTP
-            source = SshSource(url, self._download_dir)
+            source = SshSource(url, self._download_dir, timeout=self.timeout)# use SSH for SFTP
         elif protocol == 'ssh':
-            source = SshSource(url, self._download_dir)
+            source = SshSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'scp':
-            # use SSH for SCP
-            source = SshSource(url, self._download_dir)
+            source = SshSource(url, self._download_dir, timeout=self.timeout)# use SSH for SCP
         else:
             print(f"protocol {protocol} is not supported yet", file=sys.stderr)
             return -1

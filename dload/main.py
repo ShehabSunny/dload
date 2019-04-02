@@ -15,7 +15,7 @@ def main():
         print("Starting the application..")
         print(f"Download path: {args.location} \n")
         download_location = args.location
-        client = Client(download_location)
+        client = Client(download_location, timeout=60) #set default timeout 60s
         if args.file is not None:
             for line in args.file:
                 client.download(line.rstrip())

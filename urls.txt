@@ -1,3 +1,4 @@
+ftp://user:12345@107.155.79.133:1027/google-chrome-stable_current_amd64.deb
 sftp://demo:password@test.rebex.net/pub/example/WinFormClient.png
 ftp://demo:password@test.rebex.net:21/pub/example/FtpDownloader.png
 https://cdn.discordapp.com/attachments/522397585936351252/557514917058445313/CWP_Scripts_working_-_Copy_V4.xlsx
@@ -8,4 +9,3 @@ ftp://demo:password@test.rebex.net:21/readme.txt
 ftp://demo:password@test.rebex.net/readme.txt
 ssh://demo:password@test.rebex.net/readme.txt
 ftps://user:12345@107.155.79.133:1027/file.txtd
-ftps://user:12345@107.155.79.133:1027/file.txt
