@@ -17,9 +17,6 @@ class SftpSource(Source):
         username = u.username
         password = 'password' #u.password
         path = u.path
-        # define chunk size
-        chunk_len = 16 * 1024
-        
 
         # init client
         try:
