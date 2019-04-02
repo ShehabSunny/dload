@@ -13,6 +13,13 @@ class Source():
         self.download_dir = download_dir
         self.file_location = os.path.join(self.download_dir, self.file_name)
         self.timeout = timeout
+        # parse url 
+        self.parsed_url = urlparse(self.url)
+        self.username = self.parsed_url.username
+        self.password = self.parsed_url.password
+        self.host = self.parsed_url.hostname
+        self.port = self.parsed_url.port
+
 
     def download(self):
         """

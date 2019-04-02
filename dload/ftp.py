@@ -8,45 +8,64 @@ import itertools
 
 
 class FtpSource(Source):
-    def download(self):
-        # parse url 
-        u = urlparse(self.url)
-        host = u.hostname
-        port = u.port
-        if port is None:
-            port = 21 #default port for FTP
-        username = u.username
-        password = u.password
-        path = "/".join(u.path.split("/")[:-1])
-        # define chunk size
-        chunk_len = 16 * 1024
-        
-        # FTP init
-        ftp = ftplib.FTP()
+    def __init__(self, *args, **kwargs):
+        super(FtpSource, self).__init__(*args, **kwargs)
+        self.ftp = ftplib.FTP()
+        self._fpt_path = "/".join(self.parsed_url.path.split("/")[:-1])
+        self._chunk_len = 16 * 1024
 
-        # connect to server
+
+    def _connect(self):
         try:
-            ftp.connect(host, port, timeout=self.timeout)
+            # connect to server
+            if self.port is None:
+                port = 21 # default for FTP
+            else: 
+                port = self.port
+            self.ftp.connect(self.host, port, timeout=self.timeout)
+            return 0, ""
         except Exception as e:
             return -1, str(e)
-        
+
+
+    def _login(self):
+        try:
+            self.ftp.login(self.username, self.password)
+            return 0, ""
+        except Exception as e:
+            self.ftp.close()
+            return -1, str(e)
+
+
+    def _cwd(self):
+        try:
+            self.ftp.cwd(self._fpt_path)
+            return 0, ""
+        except Exception as e:
+            self.ftp.close()
+            return -1, str(e)
+
+
+
+    def download(self):
+        # connect
+        code, msg = self._connect()
+        if code != 0:
+            return code, msg
+
         # login
-        try:
-            ftp.login(username, password)
-        except Exception as e:
-            ftp.close()
-            return -1, str(e)
+        code, msg = self._login()
+        if code != 0:
+            return code, msg
 
         # change directory
-        try:
-            ftp.cwd(path)
-        except Exception as e:
-            ftp.close()
-            return -1, str(e)
+        code, msg = self._cwd()
+        if code != 0:
+            return code, msg
 
         # create a temporary file
         temp, temp_path = tempfile.mkstemp()
-    
+        # loader
         loader = itertools.cycle(["\\", "|", "/", "-"]) 
         # callback
         def cb(data):
@@ -56,13 +75,13 @@ class FtpSource(Source):
             
         try:
             # download and write into temporary file
-            ftp.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=cb)
+            self.ftp.retrbinary(cmd='RETR %s' % self.file_name, blocksize=self._chunk_len, callback=cb)
             # close and move to destination
             shutil.copy(temp_path, self.file_location)
             return 0, ""
         except Exception as ex:
             return -1, str(ex)
         finally:
-            ftp.close()
+            self.ftp.close()
             os.close(temp)
             os.remove(temp_path)

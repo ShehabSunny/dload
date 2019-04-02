@@ -9,45 +9,64 @@ import itertools
 
 
 class FtpsSource(Source):
-    def download(self):
-        # parse url 
-        u = urlparse(self.url)
-        host = u.hostname
-        port = u.port
-        if port is None:
-            port = 21 #default port for FTPS
-        username = u.username
-        password = u.password
-        path = "/".join(u.path.split("/")[:-1])
-        # define chunk size
-        chunk_len = 16 * 1024
-        
-        # FTP_TLS init
-        ftps = ftplib.FTP_TLS()
-        ftps.af = socket.AF_INET6
+    def __init__(self, *args, **kwargs):
+        super(FtpsSource, self).__init__(*args, **kwargs)
+        self.ftps = ftplib.FTP_TLS()
+        self.ftps.af = socket.AF_INET6
+        self._fpts_path = "/".join(self.parsed_url.path.split("/")[:-1])
+        self._chunk_len = 16 * 1024
 
-        # connect to server
+
+    def _connect(self):
         try:
-            ftps.connect(host, port, timeout=self.timeout)
+            # FTP_TLS init
+            if self.port is None:
+                port = 22 # default for FTPS
+            else: 
+                port = self.port
+            msg = self.ftps.connect(self.host, port, timeout=self.timeout)
+            return 0, msg
         except Exception as e:
             return -1, str(e)
+
+
+    def _login(self):
+        try:
+            # login to server
+            self.ftps.login(self.username, self.password)
+            self.ftps.prot_p()
+            return 0, ""
+        except Exception as e:
+            self.ftps.close()
+            return -1, str(e)
+
+
+    def _cwd(self):
+        try:
+            self.ftps.cwd(self._fpts_path)
+            return 0, ""
+        except Exception as e:
+            self.ftps.close()
+            return -1, str(e)
+
+
+    def download(self):
+        # connect to server
+        code, msg = self._connect()
+        if code != 0:
+            return code, msg
         
         # login
-        try:
-            ftps.login(username, password)
-            ftps.prot_p()
-        except Exception as e:
-            ftps.close()
-            return -1, str(e)
+        code, msg = self._login()
+        if code != 0:
+            return code, msg
 
-        # chane directory
-        try:
-            ftps.cwd(path)
-        except Exception as e:
-            ftps.close()
-            return -1, str(e)
+        # change directory
+        code, msg = self._cwd()
+        if code != 0:
+            return code, msg
 
-         # create a temporary file
+        #  create a temporary file
         temp, temp_path = tempfile.mkstemp()
     
         loader = itertools.cycle(["\\", "|", "/", "-"])
@@ -59,13 +78,13 @@ class FtpsSource(Source):
 
         try:
             # download and store into temp file
-            ftps.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=cb)
+            self.ftps.retrbinary(cmd='RETR %s' % self.file_name, blocksize=self._chunk_len, callback=cb)
             # close and move to destination
             shutil.copy(temp_path, self.file_location)
             return 0, ""
         except Exception as ex:
             return -1, str(ex)
         finally:
-            ftps.close()
+            self.ftps.close()
             os.close(temp)
             os.remove(temp_path)

@@ -18,13 +18,16 @@ class Client():
         self._download_dir = download_dir
         self.timeout = timeout
 
+    @staticmethod
+    def get_protocol(url):
+        return parse_protocol(url)
+
     def download(self, url: str):
         """
         handle all protocols here
         """
-        protocol = parse_protocol(url)
-        print(f"URL: {url}")
-        print(f"Protocol: {protocol}")
+        protocol = Client.get_protocol(url)
+        
         if protocol == 'http':
             source = HttpSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'https':
@@ -40,15 +43,14 @@ class Client():
         elif protocol == 'scp':
             source = SshSource(url, self._download_dir, timeout=self.timeout)# use SSH for SCP
         else:
-            print(f"protocol {protocol} is not supported yet", file=sys.stderr)
-            return -1
+            return -1, f"protocol {protocol} is not supported yet"
         # download the file
         try:
             res_code, err_msg = source.download()
             if res_code == 0:
-                print("\n\U0001F44D Download successful\n")
+                return 0, ""
             else:
-                print(f"\U0001F44E Download failed: {err_msg}\n", file=sys.stderr)
+                return res_code, err_msg
         except Exception as ex:
-            print(f"\U0001F44E Download failed: {str(ex)}\n")
+            return -1, str(ex)
 

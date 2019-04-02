@@ -1,11 +1,12 @@
-ftp://user:12345@107.155.79.133:1027/google-chrome-stable_current_amd64.deb
-sftp://demo:password@test.rebex.net/pub/example/WinFormClient.png
+http://www.africau.edu/images/default/sample.pdf
+sftpl://demo:password@test.rebex.net/pub/example/WinFormClient.png
 ftp://demo:password@test.rebex.net:21/pub/example/FtpDownloader.png
 https://cdn.discordapp.com/attachments/522397585936351252/557514917058445313/CWP_Scripts_working_-_Copy_V4.xlsx
 http://cdn.discordapp.com/attachments/522397585936351252/557514917058445313/CWP_Scripts_working_-_Copy_V4.xlsx
-ftps://demo:password@test.rebex.net:21/readme.txt
+ftps://demo:password@test.rebex.net:22/readme.txt
 scp://demo:password@test.rebex.net:22/pub/example/FtpDownloader.png
 ftp://demo:password@test.rebex.net:21/readme.txt
 ftp://demo:password@test.rebex.net/readme.txt
 ssh://demo:password@test.rebex.net/readme.txt
 ftps://user:12345@107.155.79.133:1027/file.txtd
+ftp://user:12345@107.155.79.133:1027/google-chrome-stable_current_amd64.deb

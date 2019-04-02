@@ -18,14 +18,30 @@ def main():
         client = Client(download_location, timeout=60) #set default timeout 60s
         if args.file is not None:
             for line in args.file:
-                client.download(line.rstrip())
+                if line.rstrip() != "":
+                    initiate_download(client, line.rstrip())
 
         if args.urls is not None:   
             for url in args.urls:
-                client.download(url.rstrip())
+                if url.rstrip() != "":
+                    initiate_download(client, url.rstrip())
+                
     except KeyboardInterrupt:
         # remove all temp files
         sys.exit(0)
+
+
+def initiate_download(client: Client, url:str):
+    """
+    initiate download
+    """
+    print(f"URL: {url}")
+    print(f"Protocol: {client.get_protocol(url)}")
+    res_code, err_msg = client.download(url)
+    if res_code == 0:
+        print("\n\U0001F44D Download successful\n")
+    else:
+        print(f"\U0001F44E Download failed: {err_msg}\n", file=sys.stderr)
 
 
 def init_cli():
