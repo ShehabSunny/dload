@@ -1,6 +1,9 @@
 from .source import Source
 import paramiko
 from urllib.parse import urlparse
+import tempfile
+import os
+import shutil
 
 
 class SshSource(Source):
@@ -23,7 +26,6 @@ class SshSource(Source):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             # connect to server
-            print(port, username, password)
             ssh.connect(host, port=port, username=username, password=password, allow_agent=False, look_for_keys=False)
             sftp = ssh.open_sftp()
         except Exception as e:
@@ -33,11 +35,18 @@ class SshSource(Source):
         def cb(downloaded, total):
             print(".", end='')
 
-        # download
+        # create a temporary file
+        temp, temp_path = tempfile.mkstemp()
+
         try:
-            sftp.get(path, self.file_location, callback=cb)
-            sftp.close()
+            # download
+            sftp.get(path, temp_path, callback=cb)
+            # move to destination
+            shutil.copy(temp_path, self.file_location)
             return 0, ""
         except Exception as ex:
-            sftp.close()
             return -1, str(ex)
+        finally:
+            sftp.close()
+            os.close(temp)
+            os.remove(temp_path)

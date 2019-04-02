@@ -1,6 +1,9 @@
 from .source import Source
 import ftplib
 from urllib.parse import urlparse
+import tempfile
+import os
+import shutil
 
 
 class FtpSource(Source):
@@ -40,13 +43,24 @@ class FtpSource(Source):
             ftp.close()
             return -1, str(e)
 
-        # define file handler
-        handler = open(self.file_location, 'wb')
-        # download
+        # create a temporary file
+        temp, temp_path = tempfile.mkstemp()
+    
+        # callback
+        def cb(data):
+            print(".", end="")
+            # store in temp file
+            os.write(temp, data)
+            
         try:
-            ftp.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=handler.write)
-            ftp.close()
+            # download and write into temporary file
+            ftp.retrbinary(cmd='RETR %s' % self.file_name, blocksize=chunk_len, callback=cb)
+            # close and move to destination
+            shutil.copy(temp_path, self.file_location)
             return 0, ""
-        except ftplib.error_perm as ex:
-            ftp.close()
+        except Exception as ex:
             return -1, str(ex)
+        finally:
+            ftp.close()
+            os.close(temp)
+            os.remove(temp_path)

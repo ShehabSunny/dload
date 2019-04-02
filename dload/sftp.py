@@ -1,6 +1,9 @@
 from .source import Source
 import paramiko
 from urllib.parse import urlparse
+import tempfile
+import os
+import shutil
 
 
 class SftpSource(Source):
@@ -35,13 +38,19 @@ class SftpSource(Source):
         def cb(downloaded, total):
             print(".", end='')
 
+         # create a temporary file
+        temp, temp_path = tempfile.mkstemp()
+    
         # download
         try:
-            sftp.get(path, self.file_location, callback=cb)
-            sftp.close()
-            transport.close()
+            sftp.get(path, temp_path, callback=cb)
+            # move to destination
+            shutil.copy(temp_path, self.file_location)
             return 0, ""
         except Exception as ex:
+            return -1, str(ex)
+        finally:
             sftp.close()
             transport.close()
-            return -1, str(ex)
+            os.close(temp)
+            os.remove(temp_path)

@@ -39,9 +39,9 @@ class Client():
         try:
             res_code, err_msg = source.download()
             if res_code == 0:
-                print("Download successful\n")
+                print("\n\U0001F44D Download successful\n")
             else:
-                print(f"Download failed: {err_msg}\n", file=sys.stderr)
+                print(f"\U0001F44E Download failed: {err_msg}\n", file=sys.stderr)
         except Exception as ex:
-            print(f"Download failed: {str(ex)}\n")
+            print(f"\U0001F44E Download failed: {str(ex)}\n")
 

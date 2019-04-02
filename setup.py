@@ -8,6 +8,10 @@ setup(
     author = "Shehabul Hossain",
     author_email = "hello@shehabul.com",
     url = "https://shehabul.com",
+    install_requires=[
+        'tqdm',
+        'paramiko'
+    ],
     entry_points = {
         'console_scripts': [
             'dload = dload.main:main'
