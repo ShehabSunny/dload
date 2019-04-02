@@ -8,6 +8,12 @@ import sys
 
 
 class Client():
+    """
+    Entrypoint for file download.
+    Simple usecase:
+        client = Client(download_location:str, timeout=60)
+        client.download(url:str)
+    """
     def __init__(self, download_dir, timeout=60):
         self._download_dir = download_dir
         self.timeout = timeout
