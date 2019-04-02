@@ -5,6 +5,7 @@ import socket
 import tempfile
 import os
 import shutil
+import itertools
 
 
 class FtpsSource(Source):
@@ -27,7 +28,7 @@ class FtpsSource(Source):
 
         # connect to server
         try:
-            ftps.connect(host, port)
+            ftps.connect(host, port, timeout=self.timeout)
         except Exception as e:
             return -1, str(e)
         
@@ -49,9 +50,10 @@ class FtpsSource(Source):
          # create a temporary file
         temp, temp_path = tempfile.mkstemp()
     
+        loader = itertools.cycle(["\\", "|", "/", "-"])
         # callback
         def cb(data):
-            print(".", end="")
+            print(f"Downloading: {next(loader)}", end='\r')
             # store in temp file
             os.write(temp, data)
 

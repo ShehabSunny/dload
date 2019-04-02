@@ -7,9 +7,9 @@ setup(
     description = "Python command line application to download files using several protocols",
     author = "Shehabul Hossain",
     author_email = "hello@shehabul.com",
+    python_requires='>=3.7.0',
     url = "https://shehabul.com",
     install_requires=[
-        'tqdm',
         'paramiko'
     ],
     entry_points = {

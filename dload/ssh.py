@@ -26,14 +26,14 @@ class SshSource(Source):
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             # connect to server
-            ssh.connect(host, port=port, username=username, password=password, allow_agent=False, look_for_keys=False)
+            ssh.connect(host, port=port, username=username, password=password, timeout=self.timeout, allow_agent=False, look_for_keys=False)
             sftp = ssh.open_sftp()
         except Exception as e:
             return -1, str(e)
 
         # callback
         def cb(downloaded, total):
-            print(".", end='')
+            print(f"Downloading: {(downloaded/total)*100}%", end='\r')
 
         # create a temporary file
         temp, temp_path = tempfile.mkstemp()

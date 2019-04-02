@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import tempfile
 import os
 import shutil
+import itertools
 
 
 class FtpSource(Source):
@@ -25,7 +26,7 @@ class FtpSource(Source):
 
         # connect to server
         try:
-            ftp.connect(host, port)
+            ftp.connect(host, port, timeout=self.timeout)
         except Exception as e:
             return -1, str(e)
         
@@ -46,9 +47,10 @@ class FtpSource(Source):
         # create a temporary file
         temp, temp_path = tempfile.mkstemp()
     
+        loader = itertools.cycle(["\\", "|", "/", "-"]) 
         # callback
         def cb(data):
-            print(".", end="")
+            print(f"Downloading: {next(loader)}", end='\r')
             # store in temp file
             os.write(temp, data)
             

@@ -13,36 +13,33 @@ class SftpSource(Source):
         host = u.hostname
         port = u.port
         if port is None:
-            port = 22 # default port for sftp
+            port = 22 # default port for ssh
         username = u.username
-        password = u.password
+        password = 'password' #u.password
         path = u.path
         # define chunk size
         chunk_len = 16 * 1024
         
 
-        # open transport
+        # init client
         try:
-            transport = paramiko.Transport((host, port))
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            # connect to server
+            ssh.connect(host, port=port, username=username, password=password, timeout=self.timeout, allow_agent=False, look_for_keys=False)
+            sftp = ssh.open_sftp()
         except Exception as e:
-            return -1, f"could open transport: {str(e)}"
-        
-        # authenticate and get client
-        try:
-            transport.connect(username=username, password=password)
-            sftp = paramiko.SFTPClient.from_transport(transport)
-        except Exception as e:
-            return -1, f"could not authenticate: {str(e)}"
+            return -1, str(e)
 
         # callback
         def cb(downloaded, total):
-            print(".", end='')
+            print(f"Downloading: {(downloaded/total)*100}%", end='\r')
 
-         # create a temporary file
+        # create a temporary file
         temp, temp_path = tempfile.mkstemp()
-    
-        # download
+
         try:
+            # download
             sftp.get(path, temp_path, callback=cb)
             # move to destination
             shutil.copy(temp_path, self.file_location)
@@ -51,6 +48,5 @@ class SftpSource(Source):
             return -1, str(ex)
         finally:
             sftp.close()
-            transport.close()
             os.close(temp)
             os.remove(temp_path)

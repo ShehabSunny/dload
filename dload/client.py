@@ -27,10 +27,12 @@ class Client():
         elif protocol == 'ftps':
             source = FtpsSource(url, self._download_dir)
         elif protocol == 'sftp':
-            source = SftpSource(url, self._download_dir)
+            # use SSH for SFTP
+            source = SshSource(url, self._download_dir)
         elif protocol == 'ssh':
             source = SshSource(url, self._download_dir)
         elif protocol == 'scp':
+            # use SSH for SCP
             source = SshSource(url, self._download_dir)
         else:
             print(f"protocol {protocol} is not supported yet", file=sys.stderr)

@@ -1,4 +1,3 @@
-from tqdm import tqdm
 from .source import Source
 import os
 from urllib.request import urlopen, Request
@@ -25,10 +24,13 @@ class HttpSource(Source):
             req = Request(self.url, headers=headers)
             response = urlopen(req)
             chunk_len = 16 * 1024
-            for _ in tqdm(range(math.ceil(response.length / chunk_len))):
+            total = math.ceil(response.length / chunk_len)
+            for downloaded in range(total):
                 chunk = response.read(chunk_len)
                 os.write(temp, chunk)
+                print(f"Downloading: {round((downloaded/total)*100, 2)}%", end='\r')
             # move to destination
+            print(f"Downloading: 100.0%", end='\r')
             shutil.copy(temp_path, self.file_location)
             return 0, ""
         except Exception as ex:
