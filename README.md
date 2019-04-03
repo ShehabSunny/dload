@@ -1,6 +1,20 @@
 ## Dload
 
-This is a cli tool to download files using different protocols.
+This is a cli tool to download files using different protocols.  
+
+### Quick start:
+Default download location: `$HOME/data`  
+
+**Download with urls**
+```
+$ dload -u http://example.com/file 
+```
+or  
+
+**Download with urls in a file**
+```
+$ dload -f urls.txt 
+```
 
 ### Supported protocols (Tested with)
 * http
