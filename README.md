@@ -2,6 +2,15 @@
 
 This is a cli tool to download files using different protocols.
 
+### Supported protocols (Tested with)
+* http
+* https
+* ftp
+* ftps
+* sftp
+* ssh
+* scp
+
 ### Dependencies
 * Python version: >=3.6.7
 * Python package `setuptools` if not already installed.
