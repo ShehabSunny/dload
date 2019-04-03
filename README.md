@@ -7,10 +7,10 @@ This is a cli tool to download files using different protocols.
 * Python package `setuptools` if not already installed.
 
 ### Build
-**Build the tool using `python setup.py install` or using makefile `make install`**
+**Build the tool using `python setup.py install`**
 
 ### Test
-**Test with pytest using `pytest dlaod` or using makefile `make test`**
+**Test with pytest using `pytest dlaod`**
 
 ### Using the tool
 `dload -h` will show the help information
