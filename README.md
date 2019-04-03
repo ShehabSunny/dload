@@ -3,7 +3,8 @@
 This is a cli tool to download files using different protocols.
 
 ### Dependencies
-* Python version: >=3.7 
+* Python version: >=3.6.7
+* Python package `setuptools` if not already installed.
 
 ### Build
 **Build the tool using `python setup.py install` or using makefile `make install`**
