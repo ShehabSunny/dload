@@ -1,1 +1,1 @@
-sftp://demo:password@test.rebex.net:22/readme.txt
+ftps://demo:password@test.rebex.net/readme.txt
