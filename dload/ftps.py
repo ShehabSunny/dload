@@ -21,7 +21,7 @@ class FtpsSource(Source):
         try:
             # FTP_TLS init
             if self.port is None:
-                port = 22 # default for FTPS
+                port = 21 # default for FTPS
             else: 
                 port = self.port
             msg = self.ftps.connect(self.host, port, timeout=self.timeout)

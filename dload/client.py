@@ -2,7 +2,6 @@ from .http import HttpSource
 from .ftp import FtpSource
 from .ftps import FtpsSource
 from .sftp import SftpSource
-from .ssh import SshSource
 from .common import parse_protocol
 import sys
 
@@ -37,11 +36,11 @@ class Client():
         elif protocol == 'ftps':
             source = FtpsSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'sftp':
-            source = SshSource(url, self._download_dir, timeout=self.timeout)# use SSH for SFTP
+            source = SftpSource(url, self._download_dir, timeout=self.timeout)
         elif protocol == 'ssh':
-            source = SshSource(url, self._download_dir, timeout=self.timeout)
+            source = SftpSource(url, self._download_dir, timeout=self.timeout) # use SFTP for SSH
         elif protocol == 'scp':
-            source = SshSource(url, self._download_dir, timeout=self.timeout)# use SSH for SCP
+            source = SftpSource(url, self._download_dir, timeout=self.timeout)# use SFTP for SCP
         else:
             return -1, f"protocol {protocol} is not supported yet"
         # download the file

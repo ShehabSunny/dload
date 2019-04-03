@@ -7,26 +7,46 @@ import shutil
 
 
 class SftpSource(Source):
-    def download(self):
-        # parse url 
-        u = urlparse(self.url)
-        host = u.hostname
-        port = u.port
-        if port is None:
-            port = 22 # default port for ssh
-        username = u.username
-        password = 'password' #u.password
-        path = u.path
+    def __init__(self, *args, **kwargs):
+        super(SftpSource, self).__init__(*args, **kwargs)
+        self.ssh = paramiko.SSHClient()
+        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self._sftp_path = self.parsed_url.path
 
-        # init client
+
+    def _connect(self):
+        """
+        connect and login to SFTP server
+        """
         try:
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            if self.port is None:
+                port = 22 # default for SFTP
+            else: 
+                port = self.port
             # connect to server
-            ssh.connect(host, port=port, username=username, password=password, timeout=self.timeout, allow_agent=False, look_for_keys=False)
-            sftp = ssh.open_sftp()
+            self.ssh.connect(
+                self.host, 
+                port=port, 
+                username=self.username, 
+                password=self.password, 
+                timeout=self.timeout, 
+                allow_agent=False, 
+                look_for_keys=False
+            )
+            self.sftp = self.ssh.open_sftp()
+            return 0, ""
         except Exception as e:
             return -1, str(e)
+
+
+    def download(self):
+        """
+        Download the file
+        """
+        # connect to server
+        code, msg = self._connect()
+        if code != 0:
+            return code, msg
 
         # callback
         def cb(downloaded, total):
@@ -37,13 +57,13 @@ class SftpSource(Source):
 
         try:
             # download
-            sftp.get(path, temp_path, callback=cb)
+            self.sftp.get(self._sftp_path, temp_path, callback=cb)
             # move to destination
             shutil.copy(temp_path, self.file_location)
             return 0, ""
         except Exception as ex:
             return -1, str(ex)
         finally:
-            sftp.close()
+            self.sftp.close()
             os.close(temp)
             os.remove(temp_path)
