@@ -40,10 +40,6 @@ class TestHttp(unittest.TestCase):
                 http = HttpSource(url, tmpdirname)
                 code, err_msg = http.download()
                 self.assertNotEqual(code, 0)
-                self.assertIn("getaddrinfo failed", err_msg)
-
-
-
 
 
 if __name__ == '__main__':
